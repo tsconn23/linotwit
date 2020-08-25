@@ -4,6 +4,9 @@
 *.dll
 *.so
 *.dylib
+cmd/agent/agent
+cmd/agent/go_build_main_go
+cmd/agent/cfg/configuration.full.toml
 
 # Test binary, built with `go test -c`
 *.test
@@ -13,3 +16,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+.idea/
+.vscode/
+
+#Miscellaneous files
+.project
+go.sum
+

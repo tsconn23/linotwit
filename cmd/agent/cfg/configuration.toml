@@ -1,0 +1,9 @@
+[Credentials]
+AccessToken = 'temp'
+AccessSecret = 'temp'
+ConsumerKey = 'temp'
+ConsumerSecret = 'temp'
+
+[Subscriptions]
+Handles = []
+Hashtags = []
