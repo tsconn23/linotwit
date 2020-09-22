@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/tsconn23/linotwit/internal/config"
+	"github.com/tsconn23/linotwit/internal/twitter"
 	"os"
 	"sync"
 	"time"
@@ -18,12 +20,15 @@ func main() {
 	f := flags.New()
 	f.Parse(os.Args[1:])
 
+	cfg := &config.ConfigInfo{}
 	ctx, cancel := context.WithCancel(context.Background())
 	bootstrap.Run(
 		ctx,
 		cancel,
 		f,
+		cfg,
 		[]interfaces.BootstrapHandler{
+			twitter.NewClient(cfg).BootstrapHandler,
 			TestHandler,
 		})
 }

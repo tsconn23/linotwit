@@ -17,9 +17,10 @@ func Run(
 	ctx context.Context,
 	cancel context.CancelFunc,
 	commonFlags flags.Common,
+	configuration *config.ConfigInfo,
 	handlers []interfaces.BootstrapHandler) {
 
-	wg, _ := initWaitGroup(ctx, cancel, commonFlags, handlers)
+	wg, _ := initWaitGroup(ctx, cancel, commonFlags, configuration, handlers)
 
 	wg.Wait()
 }
@@ -28,18 +29,18 @@ func initWaitGroup(
 	ctx context.Context,
 	cancel context.CancelFunc,
 	commonFlags flags.Common,
+	configuration *config.ConfigInfo,
 	handlers []interfaces.BootstrapHandler) (*sync.WaitGroup, bool) {
 
-	var cfg config.ConfigInfo
 	startedSuccessfully := true
 	loader := config.NewLoader(commonFlags)
 
-	err := loader.Process(&cfg)
+	err := loader.Process(configuration)
 	if err != nil {
 		startedSuccessfully = false
 		fmt.Println(err)
 	} else {
-		fmt.Printf("Access Token = %s\r\n", cfg.Credentials.AccessToken)
+		fmt.Printf("Access Token = %s\r\n", configuration.Credentials.AccessToken)
 	}
 
 	var wg sync.WaitGroup
