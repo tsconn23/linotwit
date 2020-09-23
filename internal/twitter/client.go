@@ -2,11 +2,14 @@ package twitter
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	"github.com/tsconn23/linotwit/internal/config"
+	"io/ioutil"
 	"log"
+	"os"
 	"sync"
 )
 
@@ -33,7 +36,16 @@ func (c *TwitterClient) BootstrapHandler(ctx context.Context, wg *sync.WaitGroup
 	// Convenience Demux demultiplexed stream messages
 	demux := twitter.NewSwitchDemux()
 	demux.Tweet = func(tweet *twitter.Tweet) {
-		fmt.Println(tweet.Text)
+		//fmt.Println(tweet.Text)
+		fmt.Println("Tweet received.")
+		b, err := json.MarshalIndent(tweet, "", "    ")
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		err = ioutil.WriteFile(tweet.IDStr + ".txt", b, os.ModePerm)
+		if err != nil {
+			fmt.Printf("Error writing file: %s\r\n", err.Error())
+		}
 	}
 	/*
 	demux.DM = func(dm *twitter.DirectMessage) {
@@ -57,7 +69,12 @@ func (c *TwitterClient) BootstrapHandler(ctx context.Context, wg *sync.WaitGroup
 	}
 
 	// Receive messages until stopped or stream quits
-	go demux.HandleChan(stream.Messages)
+	go func() {
+		defer wg.Done()
+		demux.HandleChan(stream.Messages)
+		<-ctx.Done()
+		fmt.Println("Closing Twitter stream...")
+	} ()
 
 	return true
 }
